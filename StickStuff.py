@@ -1,21 +1,53 @@
 import pygame, sys, random
 from pygame.locals import *
 
+# --- Variables needed in classes ---
+frameTime = 0
+
 # --- Classes and functions ---
-class Stickman(object):
-    def __init__(self, position, head, hand):
-        self.position = position
-        self.head = head
-        self.hand = hand
-    def render(self):
-        windowSurface.blit(baseImg, (self.position[0], self.position[1]))
-        windowSurface.blit(self.head, (self.position[0], self.position[1]))
-        windowSurface.blit(self.hand, (self.position[0], self.position[1]))
 
 def distance(speed, time):
     distance = time * speed
     return distance
 
+class Stickman(object):
+    def __init__(self, position, head, hand):
+        self.position = position
+        self.head = head
+        self.hand = hand
+        self.stickmanRect = pygame.Rect(self.position[0], self.position[1], 16 * RESIZER, 32 * RESIZER)
+        self.destination = [random.randint(0, 1200 - (16 * RESIZER)), random.randint(0, 700 - (32 * RESIZER))]
+        self.reached = [False, False]
+        self.lastMoveTime = pygame.time.get_ticks()
+        self.waitTime = random.randint(3000, 20000)
+    def render(self):
+        self.stickmanRect = pygame.Rect(self.position[0], self.position[1], 16 * RESIZER, 32 * RESIZER)
+        windowSurface.blit(baseImg, (self.position[0], self.position[1]))
+        windowSurface.blit(self.head, (self.position[0], self.position[1]))
+        windowSurface.blit(self.hand, (self.position[0], self.position[1]))
+    def move(self):
+        if int(self.position[0]) - int(self.destination[0]) > 0 and self.reached[0] == False:
+            self.position[0] = self.position[0] - distance(0.1, frameTime)
+        elif int(self.position[0]) - int(self.destination[0]) < 0 and self.reached[0] == False:
+            self.position[0] = self.position[0] + distance(0.1, frameTime)
+        elif int(self.position[0]) == int(self.destination[0]):
+            self.position[0] = self.destination[0]
+            self.reached[0] = True
+        
+        if int(self.position[1]) - int(self.destination[1]) > 0 and self.reached[1] == False:
+            self.position[1] = self.position[1] - distance(0.1, frameTime)
+        elif int(self.position[1]) - int(self.destination[1]) < 0 and self.reached[1] == False:
+            self.position[1] = self.position[1] + distance(0.1, frameTime)
+        elif int(self.position[1]) == int(self.destination[1]):
+            self.position[1] = self.destination[1]
+            self.reached[1] = True
+
+        if self.reached == [True, True] and pygame.time.get_ticks() - self.lastMoveTime >= self.waitTime:
+            self.destination = [random.randint(0, 1200 - (16 * RESIZER)), random.randint(0, 700 - (32 * RESIZER))]
+            self.reached = [False, False]
+            self.lastMoveTime = pygame.time.get_ticks()
+            self.waitTime = random.randint(3000, 20000)
+        
 # --- Constants ---
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -63,7 +95,7 @@ bg = pygame.image.load('bg.png')
 # --- Other variables
 showDebug = True
 
-stickList = []
+stickList = [Stickman([100 - 7 * RESIZER, 100 - 12 * RESIZER], hatList[random.randint(0, len(hatList) - 1)], handList[random.randint(0, len(handList) - 1)])]
 
 while True:
     frameTime = mainClock.tick(1000)
@@ -75,9 +107,10 @@ while True:
     
     for stick in stickList:
         stick.render()
+        stick.move()
     
     if showDebug == True:
-        debug = "string"
+        debug = stickList[0].reached
         debugText = basicFont.render(str(debug), True, YELLOW) #text | antialiasing | color
         windowSurface.blit(debugText, (1, 1))
 
@@ -86,6 +119,11 @@ while True:
         if event.type == MOUSEBUTTONUP:
             if event.button == 1:
                 stickList.append(Stickman([mousePosition[0] - 7 * RESIZER, mousePosition[1] - 12 * RESIZER], hatList[random.randint(0, len(hatList) - 1)], handList[random.randint(0, len(handList) - 1)]))
+            if event.button == 3:
+                for stick in stickList:
+                    if mousePosition[0] > stick.stickmanRect.left and mousePosition[0] < stick.stickmanRect.right and mousePosition[1] > stick.stickmanRect.top and mousePosition[1] < stick.stickmanRect.bottom:
+                        #add explosion to animation list (needs class)
+                        #delete character
         if event.type == KEYUP:
             if event.key == 284:
                 showDebug = not showDebug
