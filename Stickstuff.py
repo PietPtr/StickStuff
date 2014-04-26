@@ -60,7 +60,7 @@ class Explosion(object):
             windowSurface.blit(explosion[self.frame], (self.position[0], self.position[1]))
         except IndexError:
             return False
-        if pygame.time.get_ticks() - self.lastFrameTime >= 30:
+        if pygame.time.get_ticks() - self.lastFrameTime >= 40:
             self.frame = self.frame + 1
             self.lastFrameTime = pygame.time.get_ticks()
         return True
@@ -84,25 +84,19 @@ pygame.display.set_caption('Stickstuff')
 basicFont = pygame.font.SysFont(None, 23)
 mainClock = pygame.time.Clock()
 
-# --- Image loading ---
-baseImg = pygame.transform.scale(pygame.image.load('baseman.png'), (16 * resizer, 32 * resizer))
-emptyImg = pygame.transform.scale(pygame.image.load('empty.png'), (16 * resizer, 32 * resizer))
+# --- Other variables
+showDebug = True
 
-explosion = [pygame.transform.scale(pygame.image.load('explosion0.png'), (int(21 * resizer / 1.3), int(21 * resizer / 1.3))),
-             pygame.transform.scale(pygame.image.load('explosion1.png'), (int(21 * resizer / 1.3), int(21 * resizer / 1.3))),
-             pygame.transform.scale(pygame.image.load('explosion2.png'), (int(21 * resizer / 1.3), int(21 * resizer / 1.3))),
-             pygame.transform.scale(pygame.image.load('explosion3.png'), (int(21 * resizer / 1.3), int(21 * resizer / 1.3))),
-             pygame.transform.scale(pygame.image.load('explosion4.png'), (int(21 * resizer / 1.3), int(21 * resizer / 1.3))),
-             pygame.transform.scale(pygame.image.load('explosion5.png'), (int(21 * resizer / 1.3), int(21 * resizer / 1.3))),
-             pygame.transform.scale(pygame.image.load('explosion6.png'), (int(21 * resizer / 1.3), int(21 * resizer / 1.3))),
-             pygame.transform.scale(pygame.image.load('explosion7.png'), (int(21 * resizer / 1.3), int(21 * resizer / 1.3))),
-             pygame.transform.scale(pygame.image.load('explosion8.png'), (int(21 * resizer / 1.3), int(21 * resizer / 1.3)))]
-
-
-
+stickList = []
+animationList = []
 explosion = []
 hatList = []
 handList = []
+
+lastDelete = pygame.time.get_ticks()
+# --- Image loading ---
+baseImg = pygame.transform.scale(pygame.image.load('baseman.png'), (16 * resizer, 32 * resizer))
+emptyImg = pygame.transform.scale(pygame.image.load('empty.png'), (16 * resizer, 32 * resizer))
 
 path = os.path.abspath("")
 for picture in os.listdir(path):
@@ -115,16 +109,12 @@ for picture in os.listdir(path):
 
 for i in range(0, 9):
     explosion.append(pygame.transform.scale(pygame.image.load('explosion' + str(i) + '.png'), (int(21 * resizer / 1.3), int(21 * resizer / 1.3))))
+    print "Loaded explosion frame " + str(i)
 
     
 bg = pygame.image.load('bg.png')
 
-# --- Other variables
-showDebug = True
 
-stickList = [Stickman([100 - 7 * resizer, 100 - 12 * resizer], hatList[random.randint(0, len(hatList) - 1)], handList[random.randint(0, len(handList) - 1)])]
-
-animationList = []
 
 while True:
     frameTime = mainClock.tick(1000)
@@ -146,6 +136,16 @@ while True:
         debug = ""
         debugText = basicFont.render(str(debug), True, YELLOW) #text | antialiasing | color
         windowSurface.blit(debugText, (1, 1))
+
+    if pygame.key.get_pressed()[127] == True and pygame.time.get_ticks() - lastDelete >= 100:
+        try:
+            animationList.append(Explosion([stickList[len(stickList) - 1].position[0] + 8, stickList[len(stickList) - 1].position[1] + 16]))
+            del stickList[len(stickList) - 1]
+        except IndexError:
+            print "List empty"
+        lastDelete = pygame.time.get_ticks()
+        
+        
 
     pygame.display.update()
     for event in pygame.event.get():
