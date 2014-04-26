@@ -94,9 +94,9 @@ hatList = []
 handList = []
 
 lastDelete = pygame.time.get_ticks()
+lastExplosion = pygame.time.get_ticks()
 # --- Image loading ---
 baseImg = pygame.transform.scale(pygame.image.load('baseman.png'), (16 * resizer, 32 * resizer))
-emptyImg = pygame.transform.scale(pygame.image.load('empty.png'), (16 * resizer, 32 * resizer))
 
 path = os.path.abspath("")
 for picture in os.listdir(path):
@@ -145,18 +145,19 @@ while True:
             print "List empty"
         lastDelete = pygame.time.get_ticks()
         
-        
+    if pygame.mouse.get_pressed()[2] == True and pygame.time.get_ticks() - lastExplosion >= 100:
+        animationList.append(Explosion([mousePosition[0] - (21 * resizer / 2), mousePosition[1] - (21 * resizer / 2)]))
+        for stick in stickList:
+            if mousePosition[0] > stick.stickmanRect.left and mousePosition[0] < stick.stickmanRect.right and mousePosition[1] > stick.stickmanRect.top and mousePosition[1] < stick.stickmanRect.bottom:
+                stickList.remove(stick)
+        lastExplosion = pygame.time.get_ticks()
+
 
     pygame.display.update()
     for event in pygame.event.get():
         if event.type == MOUSEBUTTONUP:
             if event.button == 1:
                 stickList.append(Stickman([mousePosition[0] - 7 * resizer, mousePosition[1] - 12 * resizer], hatList[random.randint(0, len(hatList) - 1)], handList[random.randint(0, len(handList) - 1)]))
-            if event.button == 3:
-                animationList.append(Explosion([mousePosition[0] - (21 * resizer / 2), mousePosition[1] - (21 * resizer / 2)]))
-                for stick in stickList:
-                    if mousePosition[0] > stick.stickmanRect.left and mousePosition[0] < stick.stickmanRect.right and mousePosition[1] > stick.stickmanRect.top and mousePosition[1] < stick.stickmanRect.bottom:
-                        stickList.remove(stick)
         if event.type == KEYUP:
             if event.key == 284:
                 showDebug = not showDebug
