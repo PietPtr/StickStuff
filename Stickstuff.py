@@ -1,4 +1,4 @@
-import pygame, sys, random
+import pygame, sys, random, os
 from pygame.locals import *
 
 # --- Variables needed in classes ---
@@ -88,25 +88,6 @@ mainClock = pygame.time.Clock()
 baseImg = pygame.transform.scale(pygame.image.load('baseman.png'), (16 * resizer, 32 * resizer))
 emptyImg = pygame.transform.scale(pygame.image.load('empty.png'), (16 * resizer, 32 * resizer))
 
-hatList =  [pygame.transform.scale(pygame.image.load('empty.png'), (16 * resizer, 32 * resizer)),
-            pygame.transform.scale(pygame.image.load('cap.png'), (16 * resizer, 32 * resizer)),
-            pygame.transform.scale(pygame.image.load('beard.png'), (16 * resizer, 32 * resizer)),
-            pygame.transform.scale(pygame.image.load('beardGray.png'), (16 * resizer, 32 * resizer)),
-            pygame.transform.scale(pygame.image.load('monocle.png'), (16 * resizer, 32 * resizer)),
-            pygame.transform.scale(pygame.image.load('cowboy.png'), (16 * resizer, 32 * resizer)),
-            pygame.transform.scale(pygame.image.load('hat.png'), (16 * resizer, 32 * resizer)),
-            pygame.transform.scale(pygame.image.load('santa.png'), (16 * resizer, 32 * resizer))]
-
-handList = [pygame.transform.scale(pygame.image.load('empty.png'), (16 * resizer, 32 * resizer)),
-            pygame.transform.scale(pygame.image.load('stick.png'), (16 * resizer, 32 * resizer)),
-            pygame.transform.scale(pygame.image.load('spear.png'), (16 * resizer, 32 * resizer)),
-            pygame.transform.scale(pygame.image.load('beer.png'), (16 * resizer, 32 * resizer)),
-            pygame.transform.scale(pygame.image.load('pokeball.png'), (16 * resizer, 32 * resizer)),
-            pygame.transform.scale(pygame.image.load('hammer.png'), (16 * resizer, 32 * resizer)),
-            pygame.transform.scale(pygame.image.load('pickaxe.png'), (16 * resizer, 32 * resizer)),
-            pygame.transform.scale(pygame.image.load('jetpack.png'), (16 * resizer, 32 * resizer)),
-            pygame.transform.scale(pygame.image.load('sword.png'), (16 * resizer, 32 * resizer))]
-
 explosion = [pygame.transform.scale(pygame.image.load('explosion0.png'), (int(21 * resizer / 1.3), int(21 * resizer / 1.3))),
              pygame.transform.scale(pygame.image.load('explosion1.png'), (int(21 * resizer / 1.3), int(21 * resizer / 1.3))),
              pygame.transform.scale(pygame.image.load('explosion2.png'), (int(21 * resizer / 1.3), int(21 * resizer / 1.3))),
@@ -116,8 +97,26 @@ explosion = [pygame.transform.scale(pygame.image.load('explosion0.png'), (int(21
              pygame.transform.scale(pygame.image.load('explosion6.png'), (int(21 * resizer / 1.3), int(21 * resizer / 1.3))),
              pygame.transform.scale(pygame.image.load('explosion7.png'), (int(21 * resizer / 1.3), int(21 * resizer / 1.3))),
              pygame.transform.scale(pygame.image.load('explosion8.png'), (int(21 * resizer / 1.3), int(21 * resizer / 1.3)))]
-             
 
+
+
+explosion = []
+hatList = []
+handList = []
+
+path = os.path.abspath("")
+for picture in os.listdir(path):
+    if picture.endswith(".hat.png"):
+        hatList.append(pygame.transform.scale(pygame.image.load(picture), (16 * resizer, 32 * resizer)))
+        print "Loaded Hat: " + picture
+    elif picture.endswith(".hand.png"):
+        handList.append(pygame.transform.scale(pygame.image.load(picture), (16 * resizer, 32 * resizer)))
+        print "Loaded Hand: " + picture
+
+for i in range(0, 9):
+    explosion.append(pygame.transform.scale(pygame.image.load('explosion' + str(i) + '.png'), (int(21 * resizer / 1.3), int(21 * resizer / 1.3))))
+
+    
 bg = pygame.image.load('bg.png')
 
 # --- Other variables
