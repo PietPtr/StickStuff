@@ -145,7 +145,7 @@ while True:
             print "List empty"
         lastDelete = pygame.time.get_ticks()
         
-    if pygame.mouse.get_pressed()[2] == True and pygame.time.get_ticks() - lastExplosion >= 100:
+    if pygame.mouse.get_pressed()[2] == True and pygame.time.get_ticks() - lastExplosion >= 30:
         animationList.append(Explosion([mousePosition[0] - (21 * resizer / 2), mousePosition[1] - (21 * resizer / 2)]))
         for stick in stickList:
             if mousePosition[0] > stick.stickmanRect.left and mousePosition[0] < stick.stickmanRect.right and mousePosition[1] > stick.stickmanRect.top and mousePosition[1] < stick.stickmanRect.bottom:
